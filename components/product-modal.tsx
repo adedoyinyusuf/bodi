@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { X, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
 import { getProductComments, addComment } from '@/lib/services/products'
 import { useCurrency } from '@/lib/currency-context'
+import { useCart } from '@/lib/cart-context'
+import { toast } from 'sonner'
 
 interface Product {
   id: string
-  name: string
+  title: string
   description: string
   price: number
   images: string[]
@@ -30,14 +32,15 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
   const [commentText, setCommentText] = useState('')
   const [isLoadingComments, setIsLoadingComments] = useState(false)
   const { convertPrice, formatPrice } = useCurrency()
-  
+  const { addItem, setIsCartOpen } = useCart()
+
   useEffect(() => {
     if (isOpen && product) {
       loadComments()
       setCurrentImageIndex(0)
     }
   }, [product, isOpen])
-  
+
   const loadComments = async () => {
     if (!product) return
     setIsLoadingComments(true)
@@ -45,37 +48,51 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
     setComments(data)
     setIsLoadingComments(false)
   }
-  
+
+  const handleAddToBag = () => {
+    if (!product) return
+    addItem({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      images: product.images
+    })
+    toast.success('Added to bag')
+    setIsCartOpen(true)
+    onClose()
+  }
+
   const handleAddComment = async () => {
     if (!product || !commentText.trim()) return
-    
+
     // In a real app, you'd get the user from auth context
     const userId = 'anonymous'
-    
-    await addComment(product.id, userId, commentText)
+
+    await addComment(product.id, userId, 'Anonymous User', 'anon@example.com', commentText)
+
     setCommentText('')
     await loadComments()
   }
-  
+
   if (!isOpen || !product) return null
-  
+
   const images = product.images || []
   const currentImage = images[currentImageIndex] || '/placeholder.jpg'
-  
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % Math.max(images.length, 1))
   }
-  
+
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + Math.max(images.length, 1)) % Math.max(images.length, 1))
   }
-  
+
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-background rounded-xl border border-border max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-6 border-b border-border bg-background/95 backdrop-blur">
-          <h2 className="text-2xl font-bold text-foreground">{product.name}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{product.title}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -83,7 +100,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
             <X className="w-6 h-6" />
           </button>
         </div>
-        
+
         {/* Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Image Gallery */}
@@ -91,11 +108,11 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
             <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-muted">
               <Image
                 src={currentImage || "/placeholder.svg"}
-                alt={product.name}
+                alt={product.title}
                 fill
                 className="object-cover"
               />
-              
+
               {/* Image Navigation */}
               {images.length > 1 && (
                 <>
@@ -111,14 +128,14 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
                   >
                     <ChevronRight className="w-6 h-6" />
                   </button>
-                  
+
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-sm px-3 py-1 rounded-full">
                     {currentImageIndex + 1}/{images.length}
                   </div>
                 </>
               )}
             </div>
-            
+
             {/* Thumbnail Strip */}
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
@@ -126,13 +143,12 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
                   <button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
-                    className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-colors ${
-                      idx === currentImageIndex ? 'border-primary' : 'border-border'
-                    }`}
+                    className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-colors ${idx === currentImageIndex ? 'border-primary' : 'border-border'
+                      }`}
                   >
                     <Image
                       src={img || "/placeholder.svg"}
-                      alt={`${product.name} ${idx + 1}`}
+                      alt={`${product.title} ${idx + 1}`}
                       fill
                       className="object-cover"
                     />
@@ -141,7 +157,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
               </div>
             )}
           </div>
-          
+
           {/* Product Info */}
           <div className="space-y-6">
             {/* Price & Status */}
@@ -151,7 +167,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
               </div>
               <p className="text-green-600 font-medium">In Stock</p>
             </div>
-            
+
             {/* Description */}
             <div>
               <h3 className="font-semibold text-foreground mb-2">Description</h3>
@@ -159,7 +175,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
                 {product.description}
               </p>
             </div>
-            
+
             {/* Details */}
             {product.details && (
               <div>
@@ -169,35 +185,45 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
                 </p>
               </div>
             )}
-            
+
             {/* Actions */}
-            <div className="flex gap-3 pt-4 border-t border-border">
+            <div className="flex flex-col gap-3 pt-4 border-t border-border">
               <button
-                onClick={() => onLike?.(product.id)}
-                className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg py-3 font-medium"
+                onClick={handleAddToBag}
+                className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg py-4 font-bold text-lg"
               >
-                <Heart className="w-5 h-5" />
-                Like ({product.likes_count})
+                <ShoppingBag className="w-6 h-6" />
+                Add to Bag
               </button>
-              
-              <button
-                onClick={() => navigator.share({ title: product.name, text: product.description })}
-                className="flex-1 flex items-center justify-center gap-2 border border-border hover:bg-muted transition-colors rounded-lg py-3 font-medium"
-              >
-                <Share2 className="w-5 h-5" />
-                Share
-              </button>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => onLike?.(product.id)}
+                  className="flex-1 flex items-center justify-center gap-2 border border-border hover:bg-muted transition-colors rounded-lg py-3 font-medium"
+                >
+                  <Heart className="w-5 h-5" />
+                  Like ({product.likes_count})
+                </button>
+
+                <button
+                  onClick={() => navigator.share({ title: product.title, text: product.description })}
+                  className="flex-1 flex items-center justify-center gap-2 border border-border hover:bg-muted transition-colors rounded-lg py-3 font-medium"
+                >
+                  <Share2 className="w-5 h-5" />
+                  Share
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        
+
         {/* Comments Section */}
         <div className="border-t border-border p-6">
           <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
             <MessageCircle className="w-5 h-5" />
             Comments ({comments.length})
           </h3>
-          
+
           {/* Add Comment */}
           <div className="mb-6 space-y-3">
             <textarea
@@ -215,7 +241,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
               Post Comment
             </button>
           </div>
-          
+
           {/* Comments List */}
           <div className="space-y-4">
             {isLoadingComments ? (

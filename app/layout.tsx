@@ -36,9 +36,12 @@ export const metadata: Metadata = {
     width: 'device-width',
     initialScale: 1,
     userScalable: false,
-    themeColor: '#ffffff',
   }
 }
+
+import { CartProvider } from '@/lib/cart-context'
+
+import { AuthProvider } from '@/lib/auth-context'
 
 export default function RootLayout({
   children,
@@ -46,14 +49,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`font-sans antialiased flex flex-col min-h-screen`}>
         <CurrencyProvider>
-          <Navigation />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <CartProvider>
+            <AuthProvider>
+              <Navigation />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </AuthProvider>
+          </CartProvider>
         </CurrencyProvider>
         <Analytics />
       </body>

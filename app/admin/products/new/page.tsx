@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { isAdminAuthenticated } from '@/lib/auth'
 import { ProductForm } from '@/components/admin/product-form'
 
@@ -9,9 +9,14 @@ export default function NewProductPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
+  useEffect(() => {
+    if (!isAdminAuthenticated()) {
+      router.push('/admin/login')
+    }
+  }, [router])
+
   if (!isAdminAuthenticated()) {
-    router.push('/admin/login')
-    return null
+    return null // detailed handling controlled by useEffect, returning null effectively hides content until redirect or hydration
   }
 
   const handleSubmit = async (formData: any) => {

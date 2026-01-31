@@ -3,8 +3,9 @@ import { cookies } from 'next/headers'
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const cookieStore = await cookies()
     const supabase = createServerClient(
@@ -31,7 +32,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('contact_messages')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) throw error
 

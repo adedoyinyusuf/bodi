@@ -108,7 +108,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
             <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-muted">
               <Image
                 src={currentImage || "/placeholder.svg"}
-                alt={product.title}
+                alt={product.title || 'Product Image'}
                 fill
                 className="object-cover"
               />
@@ -148,7 +148,7 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
                   >
                     <Image
                       src={img || "/placeholder.svg"}
-                      alt={`${product.title} ${idx + 1}`}
+                      alt={`${product.title || 'Product'} ${idx + 1}`}
                       fill
                       className="object-cover"
                     />

@@ -1,10 +1,9 @@
-import { Navigation } from '@/components/navigation'
+
 
 export default function About() {
   return (
     <>
-      <Navigation />
-      
+
       <main className="min-h-screen bg-background">
         {/* Header */}
         <section className="bg-gradient-to-br from-background via-background to-muted py-12 md:py-20 px-4">
@@ -17,7 +16,7 @@ export default function About() {
             </p>
           </div>
         </section>
-        
+
         {/* Content */}
         <section className="max-w-4xl mx-auto px-4 py-12 md:py-20 space-y-12">
           {/* Our Story */}
@@ -30,7 +29,7 @@ export default function About() {
               We've crafted a platform where refined taste meets genuine connection. Our immersive galleries, interactive engagement, and carefully selected masterpieces create an experience that transcends ordinary product discovery.
             </p>
           </div>
-          
+
           {/* Our Mission */}
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-foreground tracking-tight">Our Mission</h2>
@@ -41,14 +40,14 @@ export default function About() {
                   We handpick masterpieces from visionary brands, ensuring every product embodies innovation and craftsmanship.
                 </p>
               </div>
-              
+
               <div className="p-6 bg-muted rounded-lg border border-border hover:border-primary/30 transition-colors">
                 <h3 className="font-semibold text-foreground mb-2 text-lg">Authentic Engagement</h3>
                 <p className="text-muted-foreground text-sm font-light">
                   Connect with a discerning community. Like, comment, and share to celebrate exceptional design together.
                 </p>
               </div>
-              
+
               <div className="p-6 bg-muted rounded-lg border border-border hover:border-primary/30 transition-colors">
                 <h3 className="font-semibold text-foreground mb-2 text-lg">Elevated Discovery</h3>
                 <p className="text-muted-foreground text-sm font-light">
@@ -57,7 +56,7 @@ export default function About() {
               </div>
             </div>
           </div>
-          
+
           {/* Values */}
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-foreground tracking-tight">Our Values</h2>
@@ -86,7 +85,7 @@ export default function About() {
               ))}
             </div>
           </div>
-          
+
           {/* Why Choose */}
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-foreground tracking-tight">Why Bodi?</h2>

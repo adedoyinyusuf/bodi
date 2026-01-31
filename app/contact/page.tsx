@@ -3,7 +3,6 @@
 import React from "react"
 
 import { useState } from 'react'
-import { Navigation } from '@/components/navigation'
 import { MessageCircle, Mail, Phone, MapPin, Send } from 'lucide-react'
 
 export default function Contact() {
@@ -15,16 +14,16 @@ export default function Contact() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       const response = await fetch('/api/messages', {
         method: 'POST',
@@ -33,14 +32,14 @@ export default function Contact() {
         },
         body: JSON.stringify(formData),
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to send message')
       }
-      
+
       setSubmitMessage('Thank you for your message! We\'ll get back to you soon.')
       setFormData({ name: '', email: '', subject: '', message: '' })
-      
+
       // Clear message after 5 seconds
       setTimeout(() => setSubmitMessage(''), 5000)
     } catch (error) {
@@ -49,13 +48,12 @@ export default function Contact() {
       setIsSubmitting(false)
     }
   }
-  
+
   const whatsappLink = `https://wa.me/1234567890?text=Hello%20TechDisplay%2C%20I%20have%20a%20question%20about%20your%20products.`
-  
+
   return (
     <>
-      <Navigation />
-      
+
       <main className="min-h-screen bg-background">
         {/* Header */}
         <section className="bg-gradient-to-br from-background via-background to-muted py-12 md:py-20 px-4">
@@ -68,14 +66,14 @@ export default function Contact() {
             </p>
           </div>
         </section>
-        
+
         {/* Contact Content */}
         <section className="max-w-6xl mx-auto px-4 py-12 md:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             {/* Contact Methods */}
             <div className="lg:col-span-1 space-y-4">
               <h2 className="text-2xl font-bold text-foreground mb-6">Contact Info</h2>
-              
+
               {/* Email */}
               <div className="p-4 bg-card border border-border rounded-lg">
                 <div className="flex items-start gap-3">
@@ -88,7 +86,7 @@ export default function Contact() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Phone */}
               <div className="p-4 bg-card border border-border rounded-lg">
                 <div className="flex items-start gap-3">
@@ -101,7 +99,7 @@ export default function Contact() {
                   </div>
                 </div>
               </div>
-              
+
               {/* WhatsApp */}
               <a
                 href={whatsappLink}
@@ -119,7 +117,7 @@ export default function Contact() {
                   </div>
                 </div>
               </a>
-              
+
               {/* Location */}
               <div className="p-4 bg-card border border-border rounded-lg">
                 <div className="flex items-start gap-3">
@@ -134,22 +132,21 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-            
+
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="bg-card border border-border rounded-lg p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6">Send us a Message</h2>
-                
+
                 {submitMessage && (
-                  <div className={`p-4 rounded-lg mb-6 text-sm ${
-                    submitMessage.includes('Thank')
-                      ? 'bg-green-50 text-green-700 border border-green-200'
-                      : 'bg-red-50 text-red-700 border border-red-200'
-                  }`}>
+                  <div className={`p-4 rounded-lg mb-6 text-sm ${submitMessage.includes('Thank')
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}>
                     {submitMessage}
                   </div>
                 )}
-                
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Name */}
@@ -167,7 +164,7 @@ export default function Contact() {
                         placeholder="John Doe"
                       />
                     </div>
-                    
+
                     {/* Email */}
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
@@ -184,7 +181,7 @@ export default function Contact() {
                       />
                     </div>
                   </div>
-                  
+
                   {/* Subject */}
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -200,7 +197,7 @@ export default function Contact() {
                       placeholder="How can we help?"
                     />
                   </div>
-                  
+
                   {/* Message */}
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -216,7 +213,7 @@ export default function Contact() {
                       placeholder="Tell us more about your inquiry..."
                     />
                   </div>
-                  
+
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -230,7 +227,7 @@ export default function Contact() {
               </div>
             </div>
           </div>
-          
+
           {/* WhatsApp CTA */}
           <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-8 text-center">
             <h3 className="text-2xl font-bold text-green-900 mb-2">Quick Chat?</h3>

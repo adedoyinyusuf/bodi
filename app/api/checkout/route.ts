@@ -1,19 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
-// Initialize Supabase Admin Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-// Ideally use Service Role Key for creating orders if RLS is strict, or verify user session.
-// For now using what we have. If SUPABASE_SERVICE_ROLE_KEY is not in env, we might fall back to anon but strict RLS might block.
-// The user provided SUPABASE_SERVICE_ROLE_KEY in the chat, I should ensure it was added to .env.local if not already.
-// I only added NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local earlier.
-// I should probably update .env.local with the service role key if needed, or rely on client-side creation for now.
-// Given strict RLS, server-side creation with Service Role is safer.
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function POST(request: Request) {
+    // Initialize Supabase Admin Client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
     try {
         const { items, total, shippingAddress, email, userId } = await request.json()
 

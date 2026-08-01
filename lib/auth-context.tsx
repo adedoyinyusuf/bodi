@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('bodi_user_session')
+      const storedUser = localStorage.getItem('wearables_user_session')
       if (storedUser) {
         setUser(JSON.parse(storedUser))
       }
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = (userData: User) => {
     setUser(userData)
     try {
-      localStorage.setItem('bodi_user_session', JSON.stringify(userData))
+      localStorage.setItem('wearables_user_session', JSON.stringify(userData))
     } catch (e) {
       console.error('Failed to save user session', e)
     }
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     setUser(null)
     try {
-      localStorage.removeItem('bodi_user_session')
+      localStorage.removeItem('wearables_user_session')
     } catch (e) {
       console.error('Failed to clear user session', e)
     }

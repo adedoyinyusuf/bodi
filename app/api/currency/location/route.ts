@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'Bodi-Electronics-App/1.0',
+        'User-Agent': 'Wearables-App/1.0',
       },
       signal: AbortSignal.timeout(5000), // 5 second timeout
     })

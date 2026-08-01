@@ -95,7 +95,7 @@ export default function Home() {
             Essential Technology
           </p>
           <h1 className="text-6xl md:text-7xl font-display font-bold text-foreground text-balance leading-tight">
-            Look Smart, Stand Out in the Crowd, the Bodi Treatment You Deserve
+            Look Smart, Stand Out in the Crowd, the Wearables Treatment You Deserve
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto text-balance font-light leading-relaxed">
             Explore our curated collection. Add items to your Interest List and inquire directly via WhatsApp.

@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         }
 
         // 3. Initialize OPay Payment
-        const reference = `BODI-${order.id}-${Date.now()}`
+        const reference = `WEARABLES-${order.id}-${Date.now()}`
         const amountKobo = Math.round(total * 100).toString()
 
         const payload = {
@@ -53,8 +53,8 @@ export async function POST(request: Request) {
                 userName: fullName
             },
             product: {
-                description: `Bodi Store Order #${order.id}`,
-                name: 'Bodi Products'
+                description: `Wearables Store Order #${order.id}`,
+                name: 'Wearables Products'
             }
         }
 

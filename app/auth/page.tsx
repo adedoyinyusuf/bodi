@@ -46,7 +46,7 @@ export default function AuthPage() {
         <div className="container mx-auto px-4 py-16 flex items-center justify-center">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">Welcome to Bodi</CardTitle>
+                    <CardTitle className="text-2xl">Welcome to Wearables</CardTitle>
                     <CardDescription>
                         Enter your phone number or email to sign in
                     </CardDescription>

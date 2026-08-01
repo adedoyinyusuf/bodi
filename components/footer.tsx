@@ -12,9 +12,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div>
-            <h3 className="font-semibold text-2xl text-foreground mb-4 tracking-tight">Bodi</h3>
+            <h3 className="font-semibold text-2xl text-foreground mb-4 tracking-tight">Wearables</h3>
             <p className="text-sm text-muted-foreground mb-4 font-light">
-              Refined electronics. Curated masterpieces. Elevated discovery and engagement.
+              Refined smart wearables. Curated masterpieces. Elevated discovery and engagement.
             </p>
           </div>
 
@@ -33,14 +33,14 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:hello@bodielect.com" className="hover:text-foreground transition-colors">
-                  hello@bodielect.com
+                <a href="mailto:hello@wearables.com" className="hover:text-foreground transition-colors">
+                  hello@wearables.com
                 </a>
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone size={16} className="flex-shrink-0" />
                 <a href="tel:+1234567890" className="hover:text-foreground transition-colors">
-                  +1 (800) BDI-TECH
+                  +1 (800) WEAR-TECH
                 </a>
               </li>
             </ul>
@@ -52,8 +52,8 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail size={16} className="flex-shrink-0" />
-                <a href="mailto:hello@techdisplay.com" className="hover:text-foreground transition-colors">
-                  hello@bodi.com
+                <a href="mailto:hello@wearables.com" className="hover:text-foreground transition-colors">
+                  hello@wearables.com
                 </a>
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ export function Footer() {
         <div className="border-t border-border pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              Copyright &copy; {currentYear} Bodi. All rights reserved.
+              Copyright &copy; {currentYear} Wearables. All rights reserved.
             </p>
             <div className="flex gap-6">
               <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

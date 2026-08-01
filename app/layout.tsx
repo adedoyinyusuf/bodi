@@ -12,8 +12,8 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 const _playfair = Playfair_Display({ subsets: ["latin"], weight: ["700", "800"] });
 
 export const metadata: Metadata = {
-  title: 'Bodi - Extraordinary Electronics Unveiled',
-  description: 'Experience refined electronics design. Curated masterpieces, interactive galleries, and elevated discovery.',
+  title: 'Wearables - Premium Smart Wearables & Electronics',
+  description: 'Experience refined smart wearables design. Curated masterpieces, interactive galleries, and elevated discovery.',
   generator: 'v0.app',
   icons: {
     icon: [

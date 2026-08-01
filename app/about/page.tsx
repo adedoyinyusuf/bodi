@@ -9,10 +9,10 @@ export default function About() {
         <section className="bg-gradient-to-br from-background via-background to-muted py-12 md:py-20 px-4">
           <div className="max-w-4xl mx-auto text-center space-y-4">
             <h1 className="text-5xl md:text-6xl font-bold text-foreground text-balance tracking-tight">
-              About Bodi
+              About Wearables
             </h1>
             <p className="text-xl text-muted-foreground font-light">
-              Redefining electronics discovery through thoughtful design and authentic engagement
+              Redefining smart wearables discovery through thoughtful design and authentic engagement
             </p>
           </div>
         </section>
@@ -23,7 +23,7 @@ export default function About() {
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-foreground tracking-tight">Our Story</h2>
             <p className="text-muted-foreground leading-relaxed font-light text-lg">
-              Bodi emerged from a singular vision: to elevate how the world discovers exceptional electronics. We believe that technology deserves the reverence of fine art—curated, celebrated, and experienced authentically. Every product in our collection represents innovation refined through thoughtful design and uncompromising quality.
+              Wearables emerged from a singular vision: to elevate how the world discovers exceptional smart wearables. We believe that technology deserves the reverence of fine art—curated, celebrated, and experienced authentically. Every product in our collection represents innovation refined through thoughtful design and uncompromising quality.
             </p>
             <p className="text-muted-foreground leading-relaxed font-light text-lg">
               We've crafted a platform where refined taste meets genuine connection. Our immersive galleries, interactive engagement, and carefully selected masterpieces create an experience that transcends ordinary product discovery.
@@ -88,7 +88,7 @@ export default function About() {
 
           {/* Why Choose */}
           <div className="space-y-4">
-            <h2 className="text-4xl font-bold text-foreground tracking-tight">Why Bodi?</h2>
+            <h2 className="text-4xl font-bold text-foreground tracking-tight">Why Wearables?</h2>
             <ul className="space-y-3 text-muted-foreground leading-relaxed font-light">
               <li className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
                 <span className="text-primary font-bold text-lg mt-1">✦</span>

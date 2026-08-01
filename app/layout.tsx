@@ -44,6 +44,8 @@ import { CartProvider } from '@/lib/cart-context'
 
 import { AuthProvider } from '@/lib/auth-context'
 
+import { NotificationProvider } from '@/components/notification-provider'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -55,11 +57,13 @@ export default function RootLayout({
         <CurrencyProvider>
           <CartProvider>
             <AuthProvider>
-              <Navigation />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
+              <NotificationProvider>
+                <Navigation />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </NotificationProvider>
             </AuthProvider>
           </CartProvider>
         </CurrencyProvider>

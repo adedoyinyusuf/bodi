@@ -3,32 +3,17 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { getSupabaseClient } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useCurrency } from '@/lib/currency-context'
 import { Loader2, Package } from 'lucide-react'
 
-interface Order {
-    id: string
-    created_at: string
-    status: string
-    total: number
-    order_items: {
-        product: {
-            title: string;
-            images: string[]
-        }
-    }[]
-}
-
 export default function AccountPage() {
-    const { user, loading: authLoading } = useAuth()
+    const { user, loading: authLoading, signOut } = useAuth()
     const router = useRouter()
     const [orders, setOrders] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const supabase = getSupabaseClient()
     const { formatPrice, convertPrice } = useCurrency()
 
     useEffect(() => {
@@ -40,38 +25,23 @@ export default function AccountPage() {
     useEffect(() => {
         async function fetchOrders() {
             if (!user) return
-
-            const { data, error } = await supabase
-                .from('orders')
-                .select(`
-          id,
-          created_at,
-          status,
-          total,
-          order_items (
-            quantity,
-            price_at_purchase,
-            products (
-              title,
-              images
-            )
-          )
-        `)
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-
-            if (error) {
+            try {
+                const res = await fetch('/api/orders')
+                if (res.ok) {
+                    const json = await res.json()
+                    setOrders(json.data || [])
+                }
+            } catch (error) {
                 console.error('Error fetching orders:', error)
-            } else {
-                setOrders(data || [])
+            } finally {
+                setLoading(false)
             }
-            setLoading(false)
         }
 
         if (user) {
             fetchOrders()
         }
-    }, [user, supabase])
+    }, [user])
 
     if (authLoading || (loading && user)) {
         return (
@@ -88,9 +58,9 @@ export default function AccountPage() {
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold">My Account</h1>
-                    <p className="text-muted-foreground">Welcome back, {user.phone}</p>
+                    <p className="text-muted-foreground">Welcome back, {user.email || user.phone || 'User'}</p>
                 </div>
-                <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+                <Button onClick={() => signOut()}>Sign Out</Button>
             </div>
 
             <div className="space-y-6">
@@ -133,10 +103,10 @@ export default function AccountPage() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2">
-                                        {order.order_items.map((item: any, idx: number) => (
+                                        {(order.order_items || []).map((item: any, idx: number) => (
                                             <div key={idx} className="flex justify-between text-sm">
                                                 <span className="text-muted-foreground">
-                                                    {item.quantity}x {item.products?.title || 'Product'}
+                                                    {item.quantity}x {item.title || 'Product'}
                                                 </span>
                                                 <span>{formatPrice(convertPrice(item.price_at_purchase))}</span>
                                             </div>

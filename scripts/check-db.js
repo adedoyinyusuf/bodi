@@ -1,30 +1,27 @@
 require('dotenv').config({ path: '.env.local' });
-const { createClient } = require('@supabase/supabase-js');
+const { Client } = require('pg');
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const connectionString = process.env.POSTGRES_URL;
 
-if (!supabaseUrl || !supabaseKey) {
-    console.error('Missing Supabase credentials');
-    process.exit(1);
+if (!connectionString) {
+  console.log('No POSTGRES_URL environment variable found in .env.local');
+  process.exit(0);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const client = new Client({ connectionString });
 
-async function checkProducts() {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .limit(1);
-
-    if (error) {
-        console.error('Error fetching products:', error);
-    } else {
-        console.log('Product Data Sample:', JSON.stringify(data[0], null, 2));
-        if (data[0]) {
-            console.log('Keys:', Object.keys(data[0]));
-        }
-    }
+async function checkDb() {
+  try {
+    await client.connect();
+    const res = await client.query('SELECT current_database(), current_user');
+    console.log('Connected to Vercel Postgres successfully:', res.rows[0]);
+    const productsRes = await client.query('SELECT COUNT(*)::int FROM products');
+    console.log('Product count:', productsRes.rows[0].count);
+  } catch (err) {
+    console.error('Postgres connection error:', err.message);
+  } finally {
+    await client.end();
+  }
 }
 
-checkProducts();
+checkDb();

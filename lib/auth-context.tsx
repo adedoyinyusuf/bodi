@@ -1,57 +1,68 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
-import { getSupabaseClient } from './supabase'
+
+export interface User {
+  id: string
+  email?: string
+  phone?: string
+}
 
 interface AuthContextType {
-    user: User | null
-    loading: boolean
-    signOut: () => Promise<void>
+  user: User | null
+  loading: boolean
+  signIn: (userData: User) => void
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
-    const supabase = getSupabaseClient()
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        // Check active session
-        const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            setUser(session?.user ?? null)
-            setLoading(false)
-        }
-
-        checkSession()
-
-        // Listen for changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-            setUser(session?.user ?? null)
-            setLoading(false)
-        })
-
-        return () => subscription.unsubscribe()
-    }, [supabase])
-
-    const signOut = async () => {
-        await supabase.auth.signOut()
-        setUser(null)
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('bodi_user_session')
+      if (storedUser) {
+        setUser(JSON.parse(storedUser))
+      }
+    } catch (e) {
+      console.error('Failed to load user session', e)
+    } finally {
+      setLoading(false)
     }
+  }, [])
 
-    return (
-        <AuthContext.Provider value={{ user, loading, signOut }}>
-            {children}
-        </AuthContext.Provider>
-    )
+  const signIn = (userData: User) => {
+    setUser(userData)
+    try {
+      localStorage.setItem('bodi_user_session', JSON.stringify(userData))
+    } catch (e) {
+      console.error('Failed to save user session', e)
+    }
+  }
+
+  const signOut = async () => {
+    setUser(null)
+    try {
+      localStorage.removeItem('bodi_user_session')
+    } catch (e) {
+      console.error('Failed to clear user session', e)
+    }
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {
-    const context = useContext(AuthContext)
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider')
-    }
-    return context
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
 }

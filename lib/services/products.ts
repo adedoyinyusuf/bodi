@@ -1,168 +1,87 @@
-import { getSupabaseClient } from '@/lib/supabase'
-
-function logServiceError(label: string, error: any) {
-  if (error) {
-    let errorMsg = '';
-    if (error && typeof error === 'object') {
-      errorMsg = error.message || (typeof error.toString === 'function' ? error.toString() : '') || JSON.stringify(error);
-      if (error.details) {
-        errorMsg += ` (${error.details})`;
-      }
-    } else {
-      errorMsg = String(error);
-    }
-    console.error(`${label} ${errorMsg}`, error);
-  }
-}
-
-// Helper to normalize product data
 function normalizeProduct(product: any) {
   return {
     ...product,
-    title: product.title || product.name || 'Untitled Product', // Fallback for legacy data
-    images: product.images || [],
+    title: product.title || product.name || 'Untitled Product',
+    images: typeof product.images === 'string' ? JSON.parse(product.images) : (product.images || []),
+    price: typeof product.price === 'string' ? parseFloat(product.price) : (product.price || 0),
+    original_price: typeof product.original_price === 'string' ? parseFloat(product.original_price) : product.original_price,
   }
 }
 
 export async function getProducts() {
   try {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      logServiceError('Error fetching products:', error)
-      return []
-    }
-
-    return (data || []).map(normalizeProduct)
+    const baseUrl = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+    const res = await fetch(`${baseUrl}/api/products`, { cache: 'no-store' })
+    if (!res.ok) return []
+    const json = await res.json()
+    return (json.data || []).map(normalizeProduct)
   } catch (err) {
-    logServiceError('Failed to connect to Supabase database (check NEXT_PUBLIC_SUPABASE_URL):', err)
+    console.error('Failed to fetch products:', err)
     return []
   }
 }
 
 export async function getProductById(id: string) {
   try {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error) {
-      logServiceError('Error fetching product:', error)
-      return null
-    }
-
-    return normalizeProduct(data)
+    const baseUrl = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+    const res = await fetch(`${baseUrl}/api/products/${id}`, { cache: 'no-store' })
+    if (!res.ok) return null
+    const json = await res.json()
+    return json.data ? normalizeProduct(json.data) : null
   } catch (err) {
-    logServiceError('Failed to connect to Supabase database:', err)
+    console.error('Failed to fetch product by id:', err)
     return null
   }
 }
 
 export async function getProductComments(productId: string) {
   try {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase
-      .from('product_comments')
-      .select('*')
-      .eq('product_id', productId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      logServiceError('Error fetching comments:', error)
-      return []
-    }
-
-    return data || []
+    const res = await fetch(`/api/comments?productId=${productId}`, { cache: 'no-store' })
+    if (!res.ok) return []
+    const json = await res.json()
+    return json.data || []
   } catch (err) {
-    logServiceError('Failed to fetch comments:', err)
+    console.error('Failed to fetch comments:', err)
     return []
   }
 }
 
 export async function addComment(productId: string, userId: string, userName: string, userEmail: string, content: string, rating?: number) {
   try {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase
-      .from('product_comments')
-      .insert([{
-        product_id: productId,
-        user_id: userId,
-        user_name: userName,
-        user_email: userEmail,
-        content,
-        rating
-      }])
-      .select()
-
-    if (error) {
-      logServiceError('Error adding comment:', error)
-      return null
-    }
-
-    return data?.[0] || null
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, userId, userName, userEmail, content, rating }),
+    })
+    if (!res.ok) return null
+    const json = await res.json()
+    return json.data || null
   } catch (err) {
-    logServiceError('Failed to add comment:', err)
+    console.error('Failed to add comment:', err)
     return null
   }
 }
 
 export async function getProductLikes(productId: string) {
   try {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase
-      .from('product_likes')
-      .select('*')
-      .eq('product_id', productId)
-
-    if (error) {
-      logServiceError('Error fetching likes:', error)
-      return []
-    }
-
-    return data || []
+    const res = await fetch(`/api/likes?productId=${productId}`, { cache: 'no-store' })
+    if (!res.ok) return []
+    const json = await res.json()
+    return json.data || []
   } catch (err) {
-    logServiceError('Failed to fetch likes:', err)
+    console.error('Failed to fetch likes:', err)
     return []
   }
 }
 
 export async function toggleLike(productId: string, userId: string) {
   try {
-    const supabase = getSupabaseClient()
-
-    // Check if already liked
-    const { data: existingLike } = await supabase
-      .from('product_likes')
-      .select('id')
-      .eq('product_id', productId)
-      .eq('user_id', userId)
-      .single()
-
-    if (existingLike) {
-      // Remove like
-      await supabase
-        .from('product_likes')
-        .delete()
-        .eq('id', existingLike.id)
-    } else {
-      // Add like
-      await supabase
-        .from('product_likes')
-        .insert([{ product_id: productId, user_id: userId }])
-    }
+    await fetch('/api/likes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, userId }),
+    })
   } catch (err) {
-    logServiceError('Failed to toggle like:', err)
+    console.error('Failed to toggle like:', err)
   }
 }

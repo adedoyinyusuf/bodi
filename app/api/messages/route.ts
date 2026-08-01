@@ -1,119 +1,44 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { query } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Handle in Server Component context
-          }
-        },
-      },
-    }
-  )
-
   try {
-    const { name, email, subject, message } = await request.json()
+    const { name, email, message } = await request.json()
 
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !message) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Insert message into database
-    const { data, error } = await supabase
-      .from('messages')
-      .insert([
-        {
-          name,
-          email,
-          subject,
-          message,
-        },
-      ])
-      .select()
-
-    if (error) {
-      console.error('Database error:', error)
-      return NextResponse.json(
-        { error: 'Failed to send message' },
-        { status: 500 }
-      )
-    }
+    const { rows } = await query(
+      'INSERT INTO messages (name, email, message) VALUES ($1, $2, $3) RETURNING *',
+      [name, email, message]
+    )
 
     return NextResponse.json(
       {
         success: true,
-        data,
+        data: rows[0],
       },
       { status: 201 }
     )
   } catch (error) {
-    console.error('API error:', error)
+    console.error('API error sending message:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to send message' },
       { status: 500 }
     )
   }
 }
 
-export async function GET(request: NextRequest) {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Handle in Server Component context
-          }
-        },
-      },
-    }
-  )
-
+export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      return NextResponse.json(
-        { error: 'Failed to fetch messages' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ data }, { status: 200 })
+    const { rows } = await query('SELECT * FROM messages ORDER BY created_at DESC')
+    return NextResponse.json({ data: rows }, { status: 200 })
   } catch (error) {
-    console.error('API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('API error fetching messages:', error)
+    return NextResponse.json({ data: [] }, { status: 200 })
   }
 }

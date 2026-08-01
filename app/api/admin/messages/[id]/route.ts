@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { query } from '@/lib/db'
+import { NextResponse } from 'next/server'
 
 export async function DELETE(
   request: Request,
@@ -7,38 +7,10 @@ export async function DELETE(
 ) {
   const { id } = await params
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {
-              // Handle cookie setting errors
-            }
-          },
-        },
-      }
-    )
-
-    const { error } = await supabase
-      .from('contact_messages')
-      .delete()
-      .eq('id', id)
-
-    if (error) throw error
-
-    return Response.json({ success: true })
+    await query('DELETE FROM messages WHERE id = $1', [id])
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Message delete error:', error)
-    return Response.json({ error: 'Failed to delete message' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to delete message' }, { status: 500 })
   }
 }

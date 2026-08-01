@@ -1,9 +1,9 @@
 'use client'
 
 import React from "react"
-
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Upload, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ProductFormData {
   title: string
@@ -34,6 +34,7 @@ export function ProductForm({ onSubmit, isLoading, initialData }: ProductFormPro
     }
   )
   const [imageUrl, setImageUrl] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
@@ -45,13 +46,47 @@ export function ProductForm({ onSubmit, isLoading, initialData }: ProductFormPro
     } else if (name === 'price') {
       setFormData({
         ...formData,
-        [name]: parseFloat(value),
+        [name]: parseFloat(value) || 0,
       })
     } else {
       setFormData({
         ...formData,
         [name]: value,
       })
+    }
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (formData.images.length >= 5) {
+      toast.error('Maximum 5 images allowed')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        body: file,
+      })
+
+      const newBlob = await response.json()
+      if (newBlob.url) {
+        setFormData((prev) => ({
+          ...prev,
+          images: [...prev.images, newBlob.url],
+        }))
+        toast.success('Image uploaded to Vercel Blob!')
+      } else {
+        throw new Error(newBlob.error || 'Upload failed')
+      }
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message || 'Failed to upload image')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -154,26 +189,31 @@ export function ProductForm({ onSubmit, isLoading, initialData }: ProductFormPro
         </div>
       </div>
 
-      {/* Images */}
+      {/* Images with Vercel Blob Upload */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">Product Images</label>
+        <label className="block text-sm font-medium text-foreground mb-2">Product Images (Vercel Blob Storage)</label>
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Enter image URL"
+              placeholder="Paste image URL..."
               className="flex-1 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
               type="button"
               onClick={handleAddImage}
               disabled={!imageUrl || formData.images.length >= 5}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
-              Add
+              Add URL
             </button>
+            <label className="cursor-pointer px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
+              {uploading ? <Loader2 className="animate-spin h-4 w-4" /> : <Upload className="h-4 w-4" />}
+              <span>Upload</span>
+              <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" disabled={uploading || formData.images.length >= 5} />
+            </label>
           </div>
 
           {formData.images.length > 0 && (
@@ -215,7 +255,7 @@ export function ProductForm({ onSubmit, isLoading, initialData }: ProductFormPro
       {/* Submit */}
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || uploading}
         className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity font-medium"
       >
         {isLoading ? 'Creating...' : 'Create Product'}

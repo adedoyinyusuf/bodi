@@ -8,25 +8,14 @@ import { useCart } from '@/lib/cart-context'
 import { ProductBadge } from '@/components/new-product-badge'
 import { ProductRating } from '@/components/product-rating'
 import { toast } from 'sonner'
-
-interface FeaturedProduct {
-  id: string
-  title: string
-  description: string
-  price: number
-  images: string[]
-  badge?: string
-  likes_count?: number
-  comments_count?: number
-  created_at?: string
-}
+import { Product } from '@/lib/product-utils'
 
 interface FeaturedCarouselProps {
-  products: FeaturedProduct[]
-  onSelect: (product: FeaturedProduct) => void
+  products: Product[]
+  onSelect: (product: Product) => void
 }
 
-function getBadgeVariant(product: FeaturedProduct) {
+function getBadgeVariant(product: Product) {
   const likesCount = product.likes_count ?? 0
   const commentsCount = product.comments_count ?? 0
   const score = likesCount + commentsCount * 2
@@ -46,7 +35,7 @@ export function FeaturedCarousel({ products, onSelect }: FeaturedCarouselProps) 
   const [activeIdx, setActiveIdx] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
-  const intervalRef = useRef<NodeJS.Timeout>()
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const { convertPrice, formatPrice } = useCurrency()
   const { addItem } = useCart()
 

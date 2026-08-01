@@ -17,26 +17,12 @@ import {
   getFeaturedProducts,
   getTrendingProducts,
   getEngagementRating,
+  type Product,
 } from '@/lib/product-utils'
 import { useNewProducts } from '@/hooks/use-new-products'
 import { useAuth } from '@/lib/auth-context'
 import { Sparkles, TrendingUp, Zap } from 'lucide-react'
 import { toast } from 'sonner'
-
-interface Product {
-  id: string
-  title: string
-  name?: string
-  description: string
-  price: number
-  images: string[]
-  likes_count: number
-  comments_count: number
-  details?: string
-  category?: string
-  created_at?: string
-  badge?: string
-}
 
 const POLL_INTERVAL_MS = 30_000
 

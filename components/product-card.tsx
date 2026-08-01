@@ -8,21 +8,8 @@ import { useCart } from '@/lib/cart-context'
 import { Button } from '@/components/ui/button'
 import { ProductBadge } from '@/components/new-product-badge'
 import { ProductRating } from '@/components/product-rating'
-import { getProductBadge, getEngagementRating } from '@/lib/product-utils'
+import { getProductBadge, getEngagementRating, type Product } from '@/lib/product-utils'
 import { toast } from 'sonner'
-
-interface Product {
-  id: string
-  title: string
-  description: string
-  price: number
-  images: string[]
-  likes_count: number
-  comments_count: number
-  created_at?: string
-  badge?: string
-  category?: string
-}
 
 interface ProductCardProps {
   product: Product

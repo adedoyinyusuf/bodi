@@ -5,6 +5,8 @@ function normalizeProduct(product: any) {
     images: typeof product.images === 'string' ? JSON.parse(product.images) : (product.images || []),
     price: typeof product.price === 'string' ? parseFloat(product.price) : (product.price || 0),
     original_price: typeof product.original_price === 'string' ? parseFloat(product.original_price) : product.original_price,
+    likes_count: parseInt(product.likes_count) || 0,
+    comments_count: parseInt(product.comments_count) || 0,
   }
 }
 

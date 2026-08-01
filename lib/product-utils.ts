@@ -6,11 +6,13 @@
 export interface Product {
   id: string
   title: string
-  description?: string
-  price?: number
-  images?: string[]
-  likes_count?: number
-  comments_count?: number
+  name?: string
+  description: string
+  price: number
+  images: string[]
+  likes_count: number
+  comments_count: number
+  details?: string
   created_at?: string
   badge?: string
   category?: string

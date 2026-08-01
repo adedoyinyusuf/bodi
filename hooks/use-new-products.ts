@@ -2,13 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useNotification } from '@/components/notification-provider'
-
-interface Product {
-  id: string
-  title: string
-  created_at?: string
-  likes_count?: number
-}
+import { Product } from '@/lib/product-utils'
 
 const POLL_INTERVAL_MS = 30_000
 
@@ -19,7 +13,7 @@ export function useNewProducts(
   const { notify } = useNotification()
   const lastKnownIdsRef = useRef<Set<string>>(new Set())
   const hasInitialized = useRef(false)
-  const timerRef = useRef<NodeJS.Timeout>()
+  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   useEffect(() => {
     if (!products.length) return

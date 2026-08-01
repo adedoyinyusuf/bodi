@@ -1,7 +1,18 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  ReactNode,
+} from 'react'
+import { createPortal } from 'react-dom'
 import { X, Sparkles, TrendingUp, Bell } from 'lucide-react'
+
+/* ---------- Types ---------- */
 
 interface Notification {
   id: string
@@ -21,6 +32,8 @@ const NotificationContext = createContext<NotificationContextValue>({ notify: ()
 export function useNotification() {
   return useContext(NotificationContext)
 }
+
+/* ---------- Config ---------- */
 
 const typeConfig = {
   new_product: {
@@ -43,6 +56,78 @@ const typeConfig = {
   },
 }
 
+/* ---------- Portal Overlay ----------
+   Rendered via createPortal so it is appended directly to <body>,
+   completely outside the React component tree hierarchy.
+   This prevents the overlay from shifting Radix UI's internal ID counter,
+   which was causing SSR/client hydration mismatches (aria-controls mismatch).
+---------------------------------------- */
+function NotificationOverlay({
+  notifications,
+  dismiss,
+}: {
+  notifications: Notification[]
+  dismiss: (id: string) => void
+}) {
+  const [mounted, setMounted] = useState(false)
+
+  // Only mount portal after hydration is complete to avoid SSR mismatch
+  useEffect(() => { setMounted(true) }, [])
+
+  if (!mounted || notifications.length === 0) return null
+
+  return createPortal(
+    <div className="fixed top-20 right-4 z-50 flex flex-col gap-3 w-80 pointer-events-none">
+      {notifications.map((notif) => {
+        const config = typeConfig[notif.type]
+        return (
+          <div
+            key={notif.id}
+            className={`animate-notification-enter pointer-events-auto
+              bg-background/95 backdrop-blur-md border ${config.borderColor}
+              rounded-xl p-4 shadow-xl`}
+            style={config.glowStyle}
+          >
+            <div className="flex items-start gap-3">
+              {/* Icon badge */}
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full ${config.bgAccent} flex items-center justify-center`}>
+                {config.icon}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-foreground">{notif.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{notif.message}</p>
+                {notif.actionLabel && notif.onAction && (
+                  <button
+                    onClick={notif.onAction}
+                    className="mt-2 text-xs font-medium text-primary hover:underline"
+                  >
+                    {notif.actionLabel} →
+                  </button>
+                )}
+              </div>
+
+              {/* Dismiss */}
+              <button
+                onClick={() => dismiss(notif.id)}
+                className="flex-shrink-0 p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>,
+    document.body
+  )
+}
+
+/* ---------- Provider ----------
+   Provides only the context value to the tree.
+   The overlay is rendered via a portal outside the tree entirely.
+---------------------------------------- */
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const nextIdRef = useRef(0)
@@ -60,51 +145,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   return (
     <NotificationContext.Provider value={{ notify }}>
       {children}
-
-      {/* Notification Stack */}
-      <div className="fixed top-20 right-4 z-50 flex flex-col gap-3 w-80 pointer-events-none">
-        {notifications.map((notif) => {
-          const config = typeConfig[notif.type]
-          return (
-            <div
-              key={notif.id}
-              className={`animate-notification-enter pointer-events-auto
-                bg-background/95 backdrop-blur-md border ${config.borderColor}
-                rounded-xl p-4 shadow-xl`}
-              style={config.glowStyle}
-            >
-              <div className="flex items-start gap-3">
-                {/* Icon badge */}
-                <div className={`flex-shrink-0 w-8 h-8 rounded-full ${config.bgAccent} flex items-center justify-center`}>
-                  {config.icon}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-foreground">{notif.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{notif.message}</p>
-                  {notif.actionLabel && notif.onAction && (
-                    <button
-                      onClick={notif.onAction}
-                      className="mt-2 text-xs font-medium text-primary hover:underline"
-                    >
-                      {notif.actionLabel} →
-                    </button>
-                  )}
-                </div>
-
-                {/* Dismiss */}
-                <button
-                  onClick={() => dismiss(notif.id)}
-                  className="flex-shrink-0 p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      <NotificationOverlay notifications={notifications} dismiss={dismiss} />
     </NotificationContext.Provider>
   )
 }

@@ -9,6 +9,7 @@ import { FeaturedCarousel } from '@/components/featured-carousel'
 import { SocialProofWidget } from '@/components/social-proof-widget'
 import { ReviewsHighlight } from '@/components/reviews-highlight'
 import { GlowText } from '@/components/glow-effect'
+import { WordRevealHeadline, ShimmerHeadline } from '@/components/animated-headline'
 import { getProducts, toggleLike } from '@/lib/services/products'
 import {
   sortByPopularity,
@@ -157,21 +158,32 @@ export default function Home() {
           <div className="animate-fade-in-up">
             <p className="text-sm md:text-base uppercase tracking-widest text-white/50 font-semibold flex items-center justify-center gap-2">
               <Zap className="w-4 h-4 text-amber-400 animate-badge-pulse" />
-              Essential Technology
+              Premium Wearable Technology
               <Zap className="w-4 h-4 text-amber-400 animate-badge-pulse delay-200" />
             </p>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-display font-bold text-white text-balance leading-tight animate-fade-in-up delay-100">
-            Look Smart, Stand Out<br />
-            <GlowText color="primary" pulse className="font-display">
-              in the Crowd
-            </GlowText>
-          </h1>
+          {/* Main headline — word-by-word reveal */}
+          <WordRevealHeadline
+            className="text-5xl md:text-7xl text-white text-balance leading-[1.08] tracking-tight"
+            staggerMs={80}
+          >
+            Wear Your Excellence
+          </WordRevealHeadline>
+
+          {/* Shimmer sub-headline */}
+          <ShimmerHeadline
+            as="h2"
+            className="text-2xl md:text-3xl tracking-wide"
+            baseColor="rgba(255,255,255,0.55)"
+            shimmerColor="oklch(0.82 0.16 30)"
+          >
+            Crafted for those who lead.
+          </ShimmerHeadline>
 
           <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto text-balance font-light leading-relaxed animate-fade-in-up delay-200">
-            The Wearables Treatment You Deserve. Curated masterpieces from visionary brands,
-            delivered to your doorstep.
+            Discover a curated world of premium wearable technology — from smart timepieces
+            to immersive audio — engineered for those who refuse to settle for ordinary.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-fade-in-up delay-300">

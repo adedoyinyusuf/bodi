@@ -1,5 +1,20 @@
 import { getSupabaseClient } from '@/lib/supabase'
 
+function logServiceError(label: string, error: any) {
+  if (error) {
+    let errorMsg = '';
+    if (error && typeof error === 'object') {
+      errorMsg = error.message || (typeof error.toString === 'function' ? error.toString() : '') || JSON.stringify(error);
+      if (error.details) {
+        errorMsg += ` (${error.details})`;
+      }
+    } else {
+      errorMsg = String(error);
+    }
+    console.error(`${label} ${errorMsg}`, error);
+  }
+}
+
 // Helper to normalize product data
 function normalizeProduct(product: any) {
   return {
@@ -18,7 +33,7 @@ export async function getProducts() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error fetching products:', error)
+    logServiceError('Error fetching products:', error)
     return []
   }
 
@@ -35,11 +50,11 @@ export async function getProductById(id: string) {
     .single()
 
   if (error) {
-    console.error('Error fetching product:', error)
+    logServiceError('Error fetching product:', error)
     return null
   }
 
-  return data
+  return normalizeProduct(data)
 }
 
 export async function getProductComments(productId: string) {
@@ -52,7 +67,7 @@ export async function getProductComments(productId: string) {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error fetching comments:', error)
+    logServiceError('Error fetching comments:', error)
     return []
   }
 
@@ -75,7 +90,7 @@ export async function addComment(productId: string, userId: string, userName: st
     .select()
 
   if (error) {
-    console.error('Error adding comment:', error)
+    logServiceError('Error adding comment:', error)
     return null
   }
 
@@ -91,7 +106,7 @@ export async function getProductLikes(productId: string) {
     .eq('product_id', productId)
 
   if (error) {
-    console.error('Error fetching likes:', error)
+    logServiceError('Error fetching likes:', error)
     return []
   }
 

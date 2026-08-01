@@ -1,10 +1,13 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { ProductCard } from '@/components/product-card'
 import { ProductModal } from '@/components/product-modal'
 import { ProductFilter } from '@/components/product-filter'
 import { getProducts, toggleLike } from '@/lib/services/products'
+import { useAuth } from '@/lib/auth-context'
+import { toast } from 'sonner'
 
 interface Product {
   id: string
@@ -20,6 +23,8 @@ interface Product {
 }
 
 export default function Home() {
+  const router = useRouter()
+  const { user } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -66,12 +71,19 @@ export default function Home() {
   }
 
   const handleLike = async (productId: string) => {
-    // In a real app, get userId from auth context
-    const userId = 'anonymous'
-    await toggleLike(productId, userId)
+    if (!user) {
+      toast.error('Please sign in to like products')
+      router.push('/auth')
+      return
+    }
 
-    // Reload products to get updated counts
-    await loadProducts()
+    try {
+      await toggleLike(productId, user.id)
+      await loadProducts()
+    } catch (error) {
+      console.error('Failed to toggle like:', error)
+      toast.error('Failed to toggle like. Please try again.')
+    }
   }
 
   return (

@@ -1,18 +1,24 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { isAdminAuthenticated } from '@/lib/auth'
 import { Shield, Key, AlertCircle } from 'lucide-react'
 
 export default function AdminSettingsPage() {
   const router = useRouter()
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
     if (!isAdminAuthenticated()) {
       router.push('/admin/login')
     }
   }, [router])
+
+  if (!isMounted || !isAdminAuthenticated()) {
+    return null
+  }
 
   return (
     <div className="space-y-6 max-w-2xl">

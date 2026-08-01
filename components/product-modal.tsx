@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { X, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
 import { getProductComments, addComment } from '@/lib/services/products'
 import { useCurrency } from '@/lib/currency-context'
 import { useCart } from '@/lib/cart-context'
+import { useAuth } from '@/lib/auth-context'
 import { toast } from 'sonner'
 
 interface Product {
@@ -27,6 +29,8 @@ interface ProductModalProps {
 }
 
 export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalProps) {
+  const router = useRouter()
+  const { user } = useAuth()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [comments, setComments] = useState<any[]>([])
   const [commentText, setCommentText] = useState('')
@@ -64,14 +68,26 @@ export function ProductModal({ product, onClose, isOpen, onLike }: ProductModalP
 
   const handleAddComment = async () => {
     if (!product || !commentText.trim()) return
+ 
+    if (!user) {
+      toast.error('Please sign in to comment')
+      router.push('/auth')
+      onClose()
+      return
+    }
 
-    // In a real app, you'd get the user from auth context
-    const userId = 'anonymous'
+    try {
+      const userName = user.phone || 'Authenticated User'
+      const userEmail = user.email || 'no-email@example.com'
 
-    await addComment(product.id, userId, 'Anonymous User', 'anon@example.com', commentText)
+      await addComment(product.id, user.id, userName, userEmail, commentText)
 
-    setCommentText('')
-    await loadComments()
+      setCommentText('')
+      await loadComments()
+    } catch (error) {
+      console.error('Failed to add comment:', error)
+      toast.error('Failed to post comment. Please try again.')
+    }
   }
 
   if (!isOpen || !product) return null

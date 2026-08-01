@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePaystackPayment } from 'react-paystack'
+
 import { useCart } from '@/lib/cart-context'
 import { useCurrency } from '@/lib/currency-context'
 import { useAuth } from '@/lib/auth-context'
@@ -14,10 +14,12 @@ import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 
 export default function CheckoutContent() {
+    // Version: OPay Migration Fixed
     const { items, subtotal, clearCart } = useCart()
     const { user } = useAuth()
     const { formatPrice, convertPrice } = useCurrency()
     const [formData, setFormData] = useState({
+        fullName: '',
         email: '',
         phone: '',
         address: '',
@@ -36,38 +38,17 @@ export default function CheckoutContent() {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    // Paystack Config
-    const config = {
-        reference: (new Date()).getTime().toString(),
-        email: formData.email,
-        amount: Math.round(convertPrice(totalUSD) * 100), // Amount in kobo/cents
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-    };
 
-    const initializePayment = usePaystackPayment({
-        ...config,
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_xxxxxxxxxxxxxxxxxxxx'
-    });
 
-    const onSuccess = () => {
-        toast.success("Payment Successful! Order placed.")
-        clearCart()
-        window.location.href = '/' // Or redirect to order history
-    };
-
-    const onClose = () => {
-        setLoading(false)
-    }
-
-    const handlePaystackPayment = async () => {
-        if (!formData.email || !formData.address) {
+    const handleOPayPayment = async () => {
+        if (!formData.fullName || !formData.email || !formData.address || !formData.phone) {
             toast.error("Please fill in all shipping details")
             return
         }
 
         setLoading(true)
         try {
-            // 1. Create Order in Pending state (Backend)
+            // 1. Create Order and Get OPay Cashier URL
             const response = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -76,14 +57,22 @@ export default function CheckoutContent() {
                     total: totalUSD,
                     shippingAddress: formData,
                     email: formData.email,
-                    userId: user?.id
+                    userId: user?.id,
+                    fullName: formData.fullName
                 })
             })
 
-            if (!response.ok) throw new Error('Failed to create order')
+            const data = await response.json()
 
-            // Initialize Paystack Payment
-            initializePayment({ onSuccess, onClose })
+            if (!response.ok) throw new Error(data.error || 'Failed to create order')
+
+            // 2. Clear Cart and Redirect to OPay
+            if (data.cashierUrl) {
+                clearCart()
+                window.location.href = data.cashierUrl
+            } else {
+                throw new Error('No payment URL returned')
+            }
 
         } catch (error) {
             console.error(error)
@@ -116,6 +105,18 @@ export default function CheckoutContent() {
                             <CardTitle>Shipping Information</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            <div className="grid gap-2">
+                                <label htmlFor="fullName" className="text-sm font-medium">Full Name</label>
+                                <Input
+                                    id="fullName"
+                                    name="fullName"
+                                    type="text"
+                                    required
+                                    value={formData.fullName}
+                                    onChange={handleInputChange}
+                                    placeholder="John Doe"
+                                />
+                            </div>
                             <div className="grid gap-2">
                                 <label htmlFor="email" className="text-sm font-medium">Email</label>
                                 <Input
@@ -188,7 +189,12 @@ export default function CheckoutContent() {
                                 {items.map((item) => (
                                     <div key={item.id} className="flex gap-4">
                                         <div className="relative h-16 w-16 shrink-0 rounded overflow-hidden bg-secondary">
-                                            <Image src={item.image} alt={item.title || 'Product image'} fill className="object-cover" />
+                                            <Image
+                                                src={item.image}
+                                                alt={`${item.title || 'Product image'}`}
+                                                fill
+                                                className="object-cover"
+                                            />
                                         </div>
                                         <div className="flex-1">
                                             <h4 className="font-medium text-sm line-clamp-2">{item.title}</h4>
@@ -216,7 +222,7 @@ export default function CheckoutContent() {
                         <CardFooter>
                             <Button
                                 className="w-full h-12 text-lg"
-                                onClick={handlePaystackPayment}
+                                onClick={handleOPayPayment}
                                 disabled={loading}
                             >
                                 {loading ? (

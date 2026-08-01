@@ -8,14 +8,16 @@ import { ProductForm } from '@/components/admin/product-form'
 export default function NewProductPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
     if (!isAdminAuthenticated()) {
       router.push('/admin/login')
     }
   }, [router])
 
-  if (!isAdminAuthenticated()) {
+  if (!isMounted || !isAdminAuthenticated()) {
     return null // detailed handling controlled by useEffect, returning null effectively hides content until redirect or hydration
   }
 

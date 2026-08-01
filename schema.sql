@@ -67,6 +67,13 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 7. Phone OTP Table
+CREATE TABLE IF NOT EXISTS otps (
+    phone VARCHAR(50) PRIMARY KEY,
+    code VARCHAR(10) NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 -- Seed Sample Products if Table is Empty
 INSERT INTO products (title, description, price, original_price, category, images, in_stock, featured, badge)
 SELECT 

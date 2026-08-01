@@ -25,115 +25,144 @@ function normalizeProduct(product: any) {
 }
 
 export async function getProducts() {
-  const supabase = getSupabaseClient()
+  try {
+    const supabase = getSupabaseClient()
 
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false })
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    logServiceError('Error fetching products:', error)
+    if (error) {
+      logServiceError('Error fetching products:', error)
+      return []
+    }
+
+    return (data || []).map(normalizeProduct)
+  } catch (err) {
+    logServiceError('Failed to connect to Supabase database (check NEXT_PUBLIC_SUPABASE_URL):', err)
     return []
   }
-
-  return (data || []).map(normalizeProduct)
 }
 
 export async function getProductById(id: string) {
-  const supabase = getSupabaseClient()
+  try {
+    const supabase = getSupabaseClient()
 
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('id', id)
-    .single()
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-  if (error) {
-    logServiceError('Error fetching product:', error)
+    if (error) {
+      logServiceError('Error fetching product:', error)
+      return null
+    }
+
+    return normalizeProduct(data)
+  } catch (err) {
+    logServiceError('Failed to connect to Supabase database:', err)
     return null
   }
-
-  return normalizeProduct(data)
 }
 
 export async function getProductComments(productId: string) {
-  const supabase = getSupabaseClient()
+  try {
+    const supabase = getSupabaseClient()
 
-  const { data, error } = await supabase
-    .from('product_comments')
-    .select('*')
-    .eq('product_id', productId)
-    .order('created_at', { ascending: false })
+    const { data, error } = await supabase
+      .from('product_comments')
+      .select('*')
+      .eq('product_id', productId)
+      .order('created_at', { ascending: false })
 
-  if (error) {
-    logServiceError('Error fetching comments:', error)
+    if (error) {
+      logServiceError('Error fetching comments:', error)
+      return []
+    }
+
+    return data || []
+  } catch (err) {
+    logServiceError('Failed to fetch comments:', err)
     return []
   }
-
-  return data || []
 }
 
 export async function addComment(productId: string, userId: string, userName: string, userEmail: string, content: string, rating?: number) {
-  const supabase = getSupabaseClient()
+  try {
+    const supabase = getSupabaseClient()
 
-  const { data, error } = await supabase
-    .from('product_comments')
-    .insert([{
-      product_id: productId,
-      user_id: userId,
-      user_name: userName,
-      user_email: userEmail,
-      content,
-      rating
-    }])
-    .select()
+    const { data, error } = await supabase
+      .from('product_comments')
+      .insert([{
+        product_id: productId,
+        user_id: userId,
+        user_name: userName,
+        user_email: userEmail,
+        content,
+        rating
+      }])
+      .select()
 
-  if (error) {
-    logServiceError('Error adding comment:', error)
+    if (error) {
+      logServiceError('Error adding comment:', error)
+      return null
+    }
+
+    return data?.[0] || null
+  } catch (err) {
+    logServiceError('Failed to add comment:', err)
     return null
   }
-
-  return data?.[0] || null
 }
 
 export async function getProductLikes(productId: string) {
-  const supabase = getSupabaseClient()
+  try {
+    const supabase = getSupabaseClient()
 
-  const { data, error } = await supabase
-    .from('product_likes')
-    .select('*')
-    .eq('product_id', productId)
+    const { data, error } = await supabase
+      .from('product_likes')
+      .select('*')
+      .eq('product_id', productId)
 
-  if (error) {
-    logServiceError('Error fetching likes:', error)
+    if (error) {
+      logServiceError('Error fetching likes:', error)
+      return []
+    }
+
+    return data || []
+  } catch (err) {
+    logServiceError('Failed to fetch likes:', err)
     return []
   }
-
-  return data || []
 }
 
 export async function toggleLike(productId: string, userId: string) {
-  const supabase = getSupabaseClient()
+  try {
+    const supabase = getSupabaseClient()
 
-  // Check if already liked
-  const { data: existingLike } = await supabase
-    .from('product_likes')
-    .select('id')
-    .eq('product_id', productId)
-    .eq('user_id', userId)
-    .single()
+    // Check if already liked
+    const { data: existingLike } = await supabase
+      .from('product_likes')
+      .select('id')
+      .eq('product_id', productId)
+      .eq('user_id', userId)
+      .single()
 
-  if (existingLike) {
-    // Remove like
-    await supabase
-      .from('product_likes')
-      .delete()
-      .eq('id', existingLike.id)
-  } else {
-    // Add like
-    await supabase
-      .from('product_likes')
-      .insert([{ product_id: productId, user_id: userId }])
+    if (existingLike) {
+      // Remove like
+      await supabase
+        .from('product_likes')
+        .delete()
+        .eq('id', existingLike.id)
+    } else {
+      // Add like
+      await supabase
+        .from('product_likes')
+        .insert([{ product_id: productId, user_id: userId }])
+    }
+  } catch (err) {
+    logServiceError('Failed to toggle like:', err)
   }
 }

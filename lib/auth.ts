@@ -1,5 +1,5 @@
-// Simple admin authentication using a password hash
-// In production, use proper Supabase Auth with admin roles
+// Simple admin authentication using password check
+// Configurable via NEXT_PUBLIC_ADMIN_PASSWORD environment variable
 
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123'
 

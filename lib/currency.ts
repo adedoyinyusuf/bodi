@@ -54,8 +54,9 @@ export function getCurrencyByCountry(countryCode: string): { code: string; symbo
   return COUNTRY_CURRENCY_MAP[countryCode?.toUpperCase()] || { code: 'NGN', symbol: '₦', name: 'Nigerian Naira' }
 }
 
-export function convertPrice(priceInUSD: number, targetCurrency: string): number {
-  const rate = EXCHANGE_RATES[targetCurrency] || 1.0
+export function convertPrice(priceInUSD: number, targetCurrency: string, rates?: Record<string, number>): number {
+  const rateMap = rates || EXCHANGE_RATES
+  const rate = rateMap[targetCurrency] || 1.0
   return priceInUSD * rate
 }
 

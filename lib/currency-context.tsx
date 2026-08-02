@@ -9,6 +9,7 @@ interface CurrencyContextType {
   currencySymbol: string
   currencyName: string
   isLoading: boolean
+  rates?: Record<string, number>
   setCountryCode: (code: string) => void
   convertPrice: (priceInUSD: number) => number
   formatPrice: (price: number) => string
@@ -21,37 +22,47 @@ const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [countryCode, setCountryCode] = useState('NG')
   const [currency, setCurrency] = useState(defaultCurrency)
+  const [rates, setRates] = useState<Record<string, number> | undefined>()
   const [isLoading, setIsLoading] = useState(true)
 
-  // Detect user's location on mount
+  // Fetch live exchange rates & detect user location on mount
   useEffect(() => {
-    const detectLocation = async () => {
+    const initCurrency = async () => {
+      // 1. Fetch real-time exchange rates
       try {
-        // Try to get country from IP-based geolocation API
+        const ratesRes = await fetch('/api/currency/rates', {
+          signal: AbortSignal.timeout(6000),
+        })
+        if (ratesRes.ok) {
+          const ratesData = await ratesRes.json()
+          if (ratesData.rates) {
+            setRates(ratesData.rates)
+          }
+        }
+      } catch (e) {
+        console.log('[Currency] Rates fetch fallback to default:', e)
+      }
+
+      // 2. Detect location
+      try {
         const response = await fetch('/api/currency/location', {
           method: 'GET',
-          signal: AbortSignal.timeout(8000), // 8 second timeout
+          signal: AbortSignal.timeout(6000),
         })
-        
-        if (!response.ok) {
-          throw new Error(`API returned status ${response.status}`)
-        }
 
-        const contentType = response.headers.get('content-type')
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('API returned non-JSON response')
-        }
-
-        const data = await response.json()
-        
-        if (data.countryCode) {
-          setCountryCode(data.countryCode)
-          setCurrency(getCurrencyByCountry(data.countryCode))
-          localStorage.setItem('preferredCountry', data.countryCode)
+        if (response.ok) {
+          const contentType = response.headers.get('content-type')
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json()
+            if (data.countryCode) {
+              setCountryCode(data.countryCode)
+              setCurrency(getCurrencyByCountry(data.countryCode))
+              localStorage.setItem('preferredCountry', data.countryCode)
+            }
+          }
         }
       } catch (error) {
-        console.log('[v0] Location detection failed:', error instanceof Error ? error.message : String(error))
-        // Fall back to localStorage or default
+        console.log('[Currency] Location detection fallback:', error)
         const stored = localStorage.getItem('preferredCountry')
         if (stored) {
           setCountryCode(stored)
@@ -62,7 +73,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    detectLocation()
+    initCurrency()
   }, [])
 
   const handleSetCountryCode = (code: string) => {
@@ -72,7 +83,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   }
 
   const convertPriceValue = (priceInUSD: number | string): number => {
-    return convertPrice(Number(priceInUSD), currency.code)
+    return convertPrice(Number(priceInUSD), currency.code, rates)
   }
 
   const formatPriceValue = (price: number | string): string => {
@@ -89,6 +100,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         currencySymbol: currency.symbol,
         currencyName: currency.name,
         isLoading,
+        rates,
         setCountryCode: handleSetCountryCode,
         convertPrice: convertPriceValue,
         formatPrice: formatPriceValue,

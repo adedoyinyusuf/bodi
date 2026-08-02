@@ -20,21 +20,47 @@ const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://bodiware.vercel.app
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Wearables | Premium Smart Wearables, Audio & Tech Electronics',
-    template: '%s | Wearables - Premium Smart Tech',
+    default: 'Wearables | Premium Laptops, Desktops, Smart Wearables & High-End Tech',
+    template: '%s | Wearables - High-End Tech & Electronics',
   },
-  description: 'Discover world-class smart wearables, acoustic headphones, high-fidelity wireless audio, and luxury smartwatches. Engineered for performance, elegance, and seamless connectivity.',
+  description: 'Shop premium laptops, all-in-one desktops, high-end computers, electronic readers, smart wearables, acoustic headphones, and luxury consumer electronics.',
   keywords: [
+    // Laptops & Computers
+    'laptops',
+    'computers',
+    'all-in-one desktops',
+    'highend laptops and desktops',
+    'high performance computers',
+    'gaming laptops',
+    'pro ultrabooks',
+    'desktop workstations',
+    'flagship PCs',
+    
+    // E-Readers & Tablets
+    'electronic readers',
+    'e-readers',
+    'e-ink devices',
+    'digital e-readers',
+
+    // Wearables & Audio
     'smart wearables',
     'wearable technology',
     'smartwatches',
     'wireless audio',
     'noise cancelling headphones',
-    'premium tech electronics',
+    'acoustic headphones',
     'bluetooth speakers',
     'fitness trackers',
+    'health monitoring wearables',
+
+    // Consumer Electronics & Tech Store
+    'premium tech electronics',
     'luxury gadgets',
     'tech accessories',
+    'smart home devices',
+    'high-end consumer electronics',
+    'tech deals 2026',
+    'best electronics store',
   ],
   authors: [{ name: 'Wearables Inc.' }],
   creator: 'Wearables',
@@ -48,8 +74,8 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   openGraph: {
-    title: 'Wearables | Premium Smart Wearables & High-End Electronics',
-    description: 'Experience refined tech design. Curated smartwatches, acoustic headphones, and high-fidelity audio engineered for excellence.',
+    title: 'Wearables | Premium Laptops, High-End Desktops & Smart Tech',
+    description: 'Explore high-performance laptops, all-in-one desktops, electronic readers, smartwatches, and high-fidelity audio electronics.',
     url: siteUrl,
     siteName: 'Wearables',
     images: [
@@ -57,7 +83,7 @@ export const metadata: Metadata = {
         url: `${siteUrl}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: 'Wearables - Premium Smart Technology & Electronics Catalog',
+        alt: 'Wearables - Premium Laptops, Desktops, Electronic Readers & Smart Tech',
       },
     ],
     locale: 'en_US',
@@ -110,7 +136,7 @@ export default function RootLayout({
     name: 'Wearables',
     url: siteUrl,
     logo: `${siteUrl}/icon.svg`,
-    description: 'Curated premium smart wearables, high-fidelity acoustic audio gear, and cutting-edge tech electronics.',
+    description: 'Curated premium laptops, all-in-one desktops, electronic readers, smart wearables, acoustic headphones, and cutting-edge tech electronics.',
     sameAs: [
       'https://twitter.com/wearables',
       'https://instagram.com/wearables',
@@ -137,10 +163,22 @@ export default function RootLayout({
     '@type': 'OnlineStore',
     name: 'Wearables',
     url: siteUrl,
-    description: 'Premier destination for luxury smart wearables and high-performance electronics.',
+    description: 'Premier online store for laptops, all-in-one desktops, high-end PCs, electronic readers, smart wearables, and high-performance electronics.',
     priceRange: '$$$',
     currenciesAccepted: 'USD, NGN',
     paymentAccepted: 'Credit Card, Debit Card, Online Payment',
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Tech & Electronics Catalog',
+      itemListElement: [
+        { '@type': 'OfferCatalog', name: 'Laptops & Computers' },
+        { '@type': 'OfferCatalog', name: 'All-in-One Desktops' },
+        { '@type': 'OfferCatalog', name: 'High-End Laptops & Desktops' },
+        { '@type': 'OfferCatalog', name: 'Electronic Readers' },
+        { '@type': 'OfferCatalog', name: 'Smart Wearables & Smartwatches' },
+        { '@type': 'OfferCatalog', name: 'Wireless & Studio Audio' },
+      ],
+    },
   }
 
   return (

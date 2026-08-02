@@ -19,9 +19,10 @@ interface ProductFormProps {
   onSubmit: (data: ProductFormData) => Promise<void>
   isLoading: boolean
   initialData?: ProductFormData
+  submitLabel?: string
 }
 
-export function ProductForm({ onSubmit, isLoading, initialData }: ProductFormProps) {
+export function ProductForm({ onSubmit, isLoading, initialData, submitLabel = 'Create Product' }: ProductFormProps) {
   const [formData, setFormData] = useState<ProductFormData>(
     initialData || {
       title: '',
@@ -258,7 +259,7 @@ export function ProductForm({ onSubmit, isLoading, initialData }: ProductFormPro
         disabled={isLoading || uploading}
         className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity font-medium"
       >
-        {isLoading ? 'Creating...' : 'Create Product'}
+        {isLoading ? 'Saving...' : submitLabel}
       </button>
     </form>
   )

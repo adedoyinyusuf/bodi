@@ -71,13 +71,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('preferredCountry', code)
   }
 
-  const convertPriceValue = (priceInUSD: number): number => {
-    return convertPrice(priceInUSD, currency.code)
+  const convertPriceValue = (priceInUSD: number | string): number => {
+    return convertPrice(Number(priceInUSD), currency.code)
   }
 
-  const formatPriceValue = (price: number): string => {
+  const formatPriceValue = (price: number | string): string => {
     const decimals = ['JPY', 'KRW'].includes(currency.code) ? 0 : 2
-    const formatted = price.toFixed(decimals)
+    const formatted = Number(price).toFixed(decimals)
     return `${currency.symbol}${formatted}`
   }
 

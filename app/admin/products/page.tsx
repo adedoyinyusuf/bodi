@@ -120,7 +120,7 @@ export default function AdminProductsPage() {
                   <tr key={product.id} className="hover:bg-accent/50 transition-colors">
                     <td className="px-6 py-4 text-sm font-medium text-foreground">{product.title}</td>
                     <td className="px-6 py-4 text-sm text-muted-foreground">{product.category}</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-foreground">${product.price.toFixed(2)}</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-foreground">${Number(product.price).toFixed(2)}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                         product.in_stock
@@ -131,7 +131,7 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-muted-foreground">
-                      {new Date(product.created_at).toLocaleDateString()}
+                      {product.created_at ? new Date(product.created_at).toLocaleDateString() : '—'}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">

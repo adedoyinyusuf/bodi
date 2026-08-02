@@ -4,6 +4,7 @@ import React from "react"
 import { useState } from 'react'
 import { X, Upload, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { PRODUCT_CATEGORY_GROUPS } from '@/lib/categories'
 
 interface ProductFormData {
   title: string
@@ -29,7 +30,7 @@ export function ProductForm({ onSubmit, isLoading, initialData, submitLabel = 'C
       description: '',
       long_description: '',
       price: 0,
-      category: 'Electronics',
+      category: PRODUCT_CATEGORY_GROUPS[0].subcategories[0],
       images: [],
       in_stock: true,
     }
@@ -178,14 +179,17 @@ export function ProductForm({ onSubmit, isLoading, initialData, submitLabel = 'C
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option>Audio</option>
-            <option>Displays</option>
-            <option>Wearables</option>
-            <option>Accessories</option>
-            <option>Peripherals</option>
-            <option>Storage</option>
+            {PRODUCT_CATEGORY_GROUPS.map((group) => (
+              <optgroup key={group.group} label={group.group}>
+                {group.subcategories.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </div>
       </div>

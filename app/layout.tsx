@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { CurrencyProvider } from '@/lib/currency-context'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -68,6 +69,7 @@ export default function RootLayout({
           </CartProvider>
         </CurrencyProvider>
         <Analytics />
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   )

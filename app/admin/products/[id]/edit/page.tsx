@@ -67,6 +67,7 @@ export default function EditProductPage() {
 
       if (res.ok) {
         toast.success('Product updated successfully!')
+        router.refresh()          // bust Next.js router cache
         router.push('/admin/products')
       } else {
         const json = await res.json()

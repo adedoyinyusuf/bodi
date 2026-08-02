@@ -1,9 +1,39 @@
+import type { Metadata } from 'next'
 
+export const metadata: Metadata = {
+  title: 'About Us | Wearables - Redefining Smart Tech & Innovation',
+  description: 'Learn about Wearables vision: handpicked smartwatches, acoustic headphones, and luxury technology curated with fine-art craftsmanship.',
+  keywords: ['about wearables', 'tech curation', 'smartwearables story', 'premium electronics brand'],
+  alternates: {
+    canonical: 'https://bodiware.vercel.app/about',
+  },
+  openGraph: {
+    title: 'About Us | Wearables - Redefining Smart Tech & Innovation',
+    description: 'Learn about Wearables vision: handpicked smartwatches, acoustic headphones, and luxury technology.',
+    url: 'https://bodiware.vercel.app/about',
+    type: 'website',
+  },
+}
 
 export default function About() {
+  const aboutPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About Wearables',
+    url: 'https://bodiware.vercel.app/about',
+    description: 'Redefining smart wearables discovery through thoughtful design and authentic engagement.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Wearables',
+    },
+  }
+
   return (
     <>
-
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageSchema) }}
+      />
       <main className="min-h-screen bg-background">
         {/* Header */}
         <section className="bg-gradient-to-br from-background via-background to-muted py-12 md:py-20 px-4">

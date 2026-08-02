@@ -27,22 +27,30 @@ export async function PUT(
   const { id } = await params
   try {
     const body = await request.json()
-    const { title, description, long_description, price, category, images, in_stock } = body
+    const { title, description, price, category, images, in_stock } = body
 
-    await query(
+    // Log what we're about to write (visible in Vercel function logs)
+    console.log('[PUT /api/admin/products]', {
+      id,
+      price,
+      priceAsNumber: Number(price),
+      title,
+      category,
+    })
+
+    const result = await query(
       `UPDATE products
-       SET title = $1,
+       SET title       = $1,
            description = $2,
-           long_description = $3,
-           price = $4,
-           category = $5,
-           images = $6::jsonb,
-           in_stock = $7
-       WHERE id = $8`,
+           price       = $3,
+           category    = $4,
+           images      = $5::jsonb,
+           in_stock    = $6
+       WHERE id = $7
+       RETURNING id, title, price, category`,
       [
         title,
         description,
-        long_description || '',
         Number(price),
         category,
         JSON.stringify(images || []),
@@ -51,12 +59,15 @@ export async function PUT(
       ]
     )
 
-    return NextResponse.json({ success: true })
+    console.log('[PUT /api/admin/products] updated row:', result.rows[0])
+
+    return NextResponse.json({ success: true, updated: result.rows[0] })
   } catch (error) {
     console.error('Product update error:', error)
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
+    return NextResponse.json({ error: String(error) }, { status: 500 })
   }
 }
+
 
 // DELETE /api/admin/products/[id]
 export async function DELETE(

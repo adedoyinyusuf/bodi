@@ -66,8 +66,15 @@ export default function EditProductPage() {
       })
 
       if (res.ok) {
-        toast.success('Product updated successfully!')
-        router.refresh()          // bust Next.js router cache
+        const json = await res.json()
+        console.log('[Edit] API confirmed update:', json.updated)
+        const confirmedPrice = json.updated?.price
+        toast.success(
+          confirmedPrice !== undefined
+            ? `Product updated! DB price = ${confirmedPrice}`
+            : 'Product updated successfully!'
+        )
+        router.refresh()
         router.push('/admin/products')
       } else {
         const json = await res.json()

@@ -21,7 +21,7 @@ import {
 } from '@/lib/product-utils'
 import { useNewProducts } from '@/hooks/use-new-products'
 import { useAuth } from '@/lib/auth-context'
-import { Sparkles, TrendingUp, Zap } from 'lucide-react'
+import { Sparkles, TrendingUp, Zap, ShieldCheck, Truck, Star, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 const POLL_INTERVAL_MS = 30_000
@@ -108,50 +108,72 @@ export default function Home() {
     <main className="min-h-screen bg-background overflow-hidden">
 
       {/* ─────────────────────────────────────────────────
-          HERO SECTION — full-bleed with animated orbs
+          HERO SECTION — Professional White Theme & Marketing Animations
       ───────────────────────────────────────────────── */}
-      <section className="relative py-20 md:py-36 px-4 overflow-hidden">
-
-        {/* Animated gradient background */}
-        <div
-          className="absolute inset-0 pointer-events-none animate-gradient-shift"
+      <section className="relative py-20 md:py-32 px-4 overflow-hidden bg-white">
+        
+        {/* Subtle mesh background grid */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.4]"
           style={{
-            background: 'linear-gradient(135deg, oklch(0.12 0 0), oklch(0.18 0.03 30), oklch(0.14 0.06 60), oklch(0.12 0 0))',
-            backgroundSize: '300% 300%',
+            backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px), radial-gradient(#cbd5e1 1px, #ffffff 1px)`,
+            backgroundSize: `40px 40px`,
+            backgroundPosition: `0 0, 20px 20px`,
           }}
         />
 
-        {/* Glow orbs */}
+        {/* Ambient soft light glows */}
         <div
-          className="absolute top-[-80px] right-[-60px] w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none animate-float-slow"
-          style={{ background: 'radial-gradient(circle, oklch(0.7 0.15 30 / 0.15), transparent 70%)' }}
+          className="absolute -top-24 right-[-10%] w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none animate-float-slow opacity-60"
+          style={{ background: 'radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(255, 255, 255, 0) 70%)' }}
         />
         <div
-          className="absolute bottom-[-60px] left-[-80px] w-[400px] h-[400px] rounded-full blur-3xl pointer-events-none animate-float-slow delay-1000"
-          style={{ background: 'radial-gradient(circle, oklch(0.65 0.22 290 / 0.1), transparent 70%)' }}
+          className="absolute bottom-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full blur-[130px] pointer-events-none animate-float-slow delay-1000 opacity-60"
+          style={{ background: 'radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, rgba(255, 255, 255, 0) 70%)' }}
         />
         <div
-          className="absolute top-[30%] left-[45%] w-[200px] h-[200px] rounded-full blur-2xl pointer-events-none animate-float-slow delay-500"
-          style={{ background: 'radial-gradient(circle, oklch(0.72 0.19 162 / 0.08), transparent 70%)' }}
-        />
-
-        {/* Decorative rotating ring */}
-        <div
-          className="absolute top-12 right-24 w-32 h-32 rounded-full border border-white/5 animate-spin-slow pointer-events-none"
+          className="absolute top-[40%] left-[30%] w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none animate-float-slow delay-500 opacity-50"
+          style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, rgba(255, 255, 255, 0) 70%)' }}
         />
 
-        <div className="relative max-w-7xl mx-auto text-center space-y-6 z-10">
-          <div className="animate-fade-in-up">
-            <p className="text-sm md:text-base uppercase tracking-widest text-white/50 font-semibold flex items-center justify-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400 animate-badge-pulse" />
-              Premium Wearable Technology
-              <Zap className="w-4 h-4 text-amber-400 animate-badge-pulse delay-200" />
-            </p>
+        {/* Floating Interactive Badge Card (Left) */}
+        <div className="hidden lg:flex items-center gap-3 absolute top-28 left-8 p-3.5 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-200/50 pointer-events-auto hover:scale-105 transition-transform animate-float-slow z-20">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 font-bold text-lg">
+            ⚡
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-slate-900">2026 Flagship Series</p>
+            <p className="text-[11px] text-slate-500">Same-Day Express Dispatch</p>
+          </div>
+        </div>
+
+        {/* Floating Interactive Badge Card (Right) */}
+        <div className="hidden lg:flex items-center gap-3 absolute bottom-24 right-10 p-3.5 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-200/50 pointer-events-auto hover:scale-105 transition-transform animate-float-slow delay-1000 z-20">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold text-lg">
+            🛡️
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-slate-900">Official 2-Year Warranty</p>
+            <p className="text-[11px] text-slate-500">100% Authentic Guaranteed</p>
+          </div>
+        </div>
+
+        <div className="relative max-w-5xl mx-auto text-center space-y-7 z-10">
+          
+          {/* Marketing Pill Badge */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-900/5 border border-slate-200/80 text-slate-800 text-xs md:text-sm font-semibold tracking-wide shadow-sm animate-fade-in-up">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span>PREMIUM WEARABLE TECHNOLOGY</span>
+            <span className="px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-700 text-[10px] font-bold uppercase">2026 Edition</span>
           </div>
 
-          {/* Main headline — word-by-word reveal */}
+          {/* Main Headline — Clean white theme with metallic gradient emphasis */}
           <WordRevealHeadline
-            className="text-5xl md:text-7xl text-white text-balance leading-[1.08] tracking-tight"
+            className="text-5xl md:text-7xl lg:text-8xl text-slate-950 font-black tracking-tight text-balance leading-[1.05]"
             staggerMs={80}
           >
             Wear Your Excellence
@@ -160,50 +182,72 @@ export default function Home() {
           {/* Shimmer sub-headline */}
           <ShimmerHeadline
             as="h2"
-            className="text-2xl md:text-3xl tracking-wide"
-            baseColor="rgba(255,255,255,0.55)"
-            shimmerColor="oklch(0.82 0.16 30)"
+            className="text-2xl md:text-3xl font-bold tracking-tight text-balance"
+            baseColor="#334155"
+            shimmerColor="#2563eb"
           >
-            Crafted for those who lead.
+            Crafted for those who lead and innovate.
           </ShimmerHeadline>
 
-          <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto text-balance font-light leading-relaxed animate-fade-in-up delay-200">
-            Discover a curated world of premium wearable technology — from smart timepieces
-            to immersive audio — engineered for those who refuse to settle for ordinary.
+          <p className="text-base md:text-xl text-slate-600 max-w-2xl mx-auto text-balance font-normal leading-relaxed animate-fade-in-up delay-200">
+            Discover a curated world of high-performance smart timepieces, studio headphones,
+            and flagship mobile gear — engineered with fine-art precision.
           </p>
 
+          {/* Marketing Value Props Bar */}
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs md:text-sm text-slate-600 font-medium animate-fade-in-up delay-250">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full">
+              <Truck className="w-4 h-4 text-slate-700" />
+              <span>Free Worldwide Shipping</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full">
+              <ShieldCheck className="w-4 h-4 text-slate-700" />
+              <span>2-Year Warranty</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200/60 rounded-full">
+              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <span className="font-semibold">4.9/5 Rating (2,400+ Reviews)</span>
+            </div>
+          </div>
+
+          {/* Marketing Call-to-Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-fade-in-up delay-300">
             <a
               href="#collection"
-              className="inline-flex items-center gap-2 px-8 md:px-12 py-4 bg-primary text-primary-foreground font-semibold rounded-full
-                hover:scale-105 transition-transform hover:shadow-[0_0_24px_oklch(0.7_0.15_30_/_0.5)]"
+              className="inline-flex items-center gap-2.5 px-8 md:px-10 py-4 bg-slate-950 text-white font-semibold rounded-full
+                hover:bg-slate-900 hover:scale-105 transition-all shadow-xl shadow-slate-950/20 hover:shadow-slate-950/30"
             >
-              <Sparkles className="w-5 h-5" />
-              View Collection
+              <Sparkles className="w-5 h-5 text-amber-300" />
+              <span>View Collection</span>
+              <ArrowRight className="w-4 h-4" />
             </a>
             <a
               href="#trending"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 text-white rounded-full
-                hover:bg-white/5 transition-colors font-medium"
+              className="inline-flex items-center gap-2.5 px-8 py-4 border border-slate-300/80 bg-white/80 backdrop-blur text-slate-800 rounded-full
+                hover:bg-slate-50 hover:border-slate-400 transition-all font-semibold shadow-sm"
             >
-              <TrendingUp className="w-5 h-5" />
-              See Trending
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <span>See Trending</span>
             </a>
           </div>
 
-          {/* Stats row */}
-          <div className="flex items-center justify-center gap-8 md:gap-16 pt-8 animate-fade-in-up delay-500">
+          {/* Social Proof Stats Cards */}
+          <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto pt-8 animate-fade-in-up delay-500">
             {[
               { label: 'Products', value: products.length || '—' },
               { label: 'Happy Customers', value: '2.4K+' },
               { label: 'Cities Served', value: '12+' },
             ].map(stat => (
-              <div key={stat.label} className="text-center">
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-white/50 mt-0.5">{stat.label}</p>
+              <div 
+                key={stat.label} 
+                className="p-4 bg-white/90 border border-slate-200/80 rounded-2xl text-center shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
+              >
+                <p className="text-xl md:text-2xl font-bold text-slate-950 tracking-tight">{stat.value}</p>
+                <p className="text-[11px] md:text-xs text-slate-500 font-medium mt-0.5">{stat.label}</p>
               </div>
             ))}
           </div>
+
         </div>
       </section>
 

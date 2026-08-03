@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 /* ============================================================
    GradientHeadline
    Renders text with an animated flowing gradient effect.
+   Works beautifully on light and dark backgrounds.
    ============================================================ */
 interface GradientHeadlineProps {
   children: string
   className?: string
   as?: 'h1' | 'h2' | 'h3'
   animate?: boolean
+  gradient?: string
 }
 
 export function GradientHeadline({
@@ -18,12 +20,13 @@ export function GradientHeadline({
   className = '',
   as: Tag = 'h1',
   animate = true,
+  gradient = 'linear-gradient(135deg, #0f172a 0%, #334155 35%, #0284c7 65%, #0f172a 100%)',
 }: GradientHeadlineProps) {
   return (
     <Tag
       className={`animate-fade-in-up font-display font-bold ${className}`}
       style={{
-        background: 'linear-gradient(135deg, #fff 0%, oklch(0.85 0.15 30) 35%, #fff 55%, oklch(0.78 0.19 75) 75%, #fff 100%)',
+        background: gradient,
         backgroundSize: '300% 300%',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
@@ -98,8 +101,8 @@ export function ShimmerHeadline({
   children,
   className = '',
   as: Tag = 'h1',
-  baseColor = '#ffffff',
-  shimmerColor = 'oklch(0.85 0.15 30)',
+  baseColor = '#0f172a',
+  shimmerColor = '#818cf8',
 }: ShimmerHeadlineProps) {
   return (
     <Tag

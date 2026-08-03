@@ -38,13 +38,8 @@ export default function AuthPage() {
 
             if (!res.ok) throw new Error(data.error || 'Failed to send OTP')
 
-            if (data.debugCode) {
-                toast.success(`Test OTP Code: ${data.debugCode}`, { duration: 10000 })
-                setOtp(data.debugCode)
-            } else {
-                toast.success(`Verification code sent to ${phone}`)
-            }
-
+            toast.success(`Verification code sent to ${phone}`)
+            setOtp('')
             setStep('otp')
         } catch (err: any) {
             toast.error(err.message || 'Something went wrong')
